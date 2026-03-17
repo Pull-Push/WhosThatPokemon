@@ -54,7 +54,15 @@ function render() {
 async function fetchRandomPokemon() {
   const randomId = Math.floor(Math.random() * 151) + 1;
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
+    if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+    }
     const data = await response.json();
+
+    if(!data.name || !data.sprites?.front_default){
+        throw new Error('Incomplete Pokemon data received')
+    }
+
     return {
         name: data.name,
         sprite: data.sprites.front_default,
@@ -64,18 +72,27 @@ async function fetchRandomPokemon() {
 
 async function startGame() {
     feedbackEl.textContent = 'Loading...';
+    guessInput.disabled = true;
+    guessBtn.disabled = true;
 
-    state.answer      = await fetchRandomPokemon();
-    state.guessesLeft = state.maxGuesses;
-    state.gameOver    = false;
-    state.won         = false;
+    try {
+        state.answer      = await fetchRandomPokemon();
+        state.guessesLeft = state.maxGuesses;
+        state.gameOver    = false;
+        state.won         = false;
 
-    pokemonImg.src = state.answer.sprite;
+        pokemonImg.src = state.answer.sprite;
+        render();
 
-    render();
+        guessInput.value = '';
+        guessInput.focus();
+    } catch (error) {
+        feedbackEl.textContent = "Could not load Pokemon. Try Again!"
+        console.error('Failed to fetch Pokemon:', error)
 
-    guessInput.value = '';
-    guessInput.focus();
+        playAgainBtn.style.display = 'block'
+    }
+
 }
 
 function handleGuess() {
