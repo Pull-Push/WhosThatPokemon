@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokeguess</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="pokedex">
+
+        <!-- TOP HALF: decorattive panel + main screen -->
+        <div class="pokedex__top">
+
+            <div class="pokedex__lens">
+                <!-- big blue 'eye' lens on the left -->
+                <div class="pokedex__lens-inner"></div>
+            </div>
+
+            <!-- Main game screen -->
+            <div class="pokedex__screen">
+                <!-- pokemon silhouette / reveal image -->
+                <div class="scressn__image-area">
+                    <img src="" alt="???" id="pokemon-img">
+                </div>
+                <!-- feedback text e.g. Wrong try again! -->
+                <div class="screen__feedback" id="feedback">
+                    Who's That Pokemon?
+                </div>
+            </div>
+        </div>
+    <!-- Middle: gym badge lives tracker -->
+    <div class="pokedex__badges" id="badge-container">
+    <!-- badges will be injected here by js -->
+    </div>
+    <!-- bottom half: guess input controls  -->
+    <div class="pokedex__controls">
+        <input type="text" id="guess-input" placeholder="Enter Pokemon name..." autocomplete="off"/>
+        <button id="guess-btn">GUESS</button>
+    </div>
+    <button id="play-again-btn" style="display:none">PLAY AGAIN</button>
+</div>
+<script src="game.js"></script>
+</body>
+</html>
