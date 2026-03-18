@@ -3,7 +3,8 @@ const state = {
     maxGuesses: 8,
     guessesLeft: 8,
     gameOver: false,
-    won: false
+    won: false,
+    allPokemon: [],
 };
 
 const pokemonImg     = document.getElementById('pokemon-img');
@@ -12,8 +13,53 @@ const badgeContainer = document.getElementById('badge-container');
 const guessInput     = document.getElementById('guess-input');
 const guessBtn       = document.getElementById('guess-btn');
 const playAgainBtn = document.getElementById('play-again-btn');
+const autocompleteList = document.getElementById('autocomplete-list')
 
-// ── 3. BADGE DATA ────────────────────────────────────────────
+
+async function fetchAllPokemonNames(){
+    const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1250')
+    if (!response.ok){
+        throw new Error(`Failed to load Pokemon list: ${response.status}`)
+    }
+    const data = await response.json()
+    state.allPokemon = data.results.map(pokemon => pokemon.name)
+}
+
+function showSuggestions(query){
+    autocompleteList.innerHTML = '';
+
+    if (!query || query.length < 2){
+        autocompleteList.style.display = 'none';
+        return;
+    }
+
+    const matches = state.allPokemon
+        .filter(name =>name.startsWith(query.toLowerCase()))
+        .slice(0,6)
+
+    if (matches.length === 0){
+        autocompleteList.style.display === 'none'
+        return;
+    }
+
+    matches.forEach(name =>{
+        const li = document.createElement('li');
+            li.textContent = name;
+
+            li.addEventListener('click', () =>{
+                guessInput.value = name;
+                autocompleteList.style.display = 'none'
+                guessInput.focus();
+            });
+            autocompleteList.appendChild(li)
+    })
+    autocompleteList.style.display = 'block'
+}
+
+
+
+
+
 const BADGE_NAMES = ['Boulder','Cascade','Thunder','Rainbow','Soul','Marsh','Volcano','Earth'];
 const BADGES = Array.from({ length: 8 }, (_, i) => ({
     name: BADGE_NAMES[i],
@@ -22,7 +68,6 @@ const BADGES = Array.from({ length: 8 }, (_, i) => ({
 
 function render() {
 
-  // -- Badges --
     badgeContainer.innerHTML = '';
     BADGES.forEach((badge, index) => {
         const img = document.createElement('img');
@@ -50,7 +95,6 @@ function render() {
     guessBtn.disabled = state.gameOver;
 }
 
-
 async function fetchRandomPokemon() {
   const randomId = Math.floor(Math.random() * 151) + 1;
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
@@ -76,6 +120,9 @@ async function startGame() {
     guessBtn.disabled = true;
 
     try {
+        if(state.allPokemon.length === 0){
+            await fetchAllPokemonNames()
+        }
         state.answer      = await fetchRandomPokemon();
         state.guessesLeft = state.maxGuesses;
         state.gameOver    = false;
@@ -120,6 +167,16 @@ guessBtn.addEventListener('click', handleGuess);
 guessInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleGuess();
 });
+
+guessInput.addEventListener('input', (e) =>{
+    showSuggestions(e.target.value)
+});
+
+guessInput.addEventListener('blur', () =>{
+    setTimeout(() =>{
+        autocompleteList.style.display = 'none'
+    }, 150)
+})
 
 playAgainBtn.addEventListener('click', startGame);
 

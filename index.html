@@ -35,7 +35,10 @@
     </div>
     <!-- bottom half: guess input controls  -->
     <div class="pokedex__controls">
-        <input type="text" id="guess-input" placeholder="Enter Pokemon name..." autocomplete="off"/>
+        <div class="autocomplete-wrapper">
+            <input type="text" id="guess-input" placeholder="Enter Pokemon name..." autocomplete="off"/>
+        <ul id="autocomplete-list"></ul>
+        </div>
         <button id="guess-btn">GUESS</button>
     </div>
     <button id="play-again-btn" style="display:none">PLAY AGAIN</button>

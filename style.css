@@ -204,3 +204,39 @@ button#play-again-btn{
     padding: clamp(8px, 2vw, 12px) clamp(10px, 3vw, 18px);
     font-size: clamp(10px, 2.5vw, 13px);
 }
+
+.autocomplete-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+#autocomplete-list {
+    position: absolute;
+    top: 100%;       
+    left: 0;
+    right: 0;
+    background: #111;
+    border: 2px solid var(--screen-bg);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    list-style: none;
+    max-height: 160px;
+    overflow-y: auto;
+    z-index: 10;      
+    display: none;   
+}
+
+#autocomplete-list li {
+    padding: 8px 12px;
+    color: var(--screen-bg);
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: capitalize;
+}
+
+#autocomplete-list li:hover,
+#autocomplete-list li.highlighted {
+    background: var(--dark-red);
+    color: white;
+}
