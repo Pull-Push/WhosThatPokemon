@@ -153,11 +153,13 @@ function handleGuess() {
     if (guess === state.answer.name) {
         state.won = true;
         state.gameOver = true;
+        calculateScore();
     } else {
         state.guessesLeft--;
         if (state.guessesLeft === 0) {
         state.gameOver = true;
         state.won = false;
+        calculateScore();
     }
 }
 
