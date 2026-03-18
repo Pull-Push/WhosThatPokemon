@@ -5,6 +5,11 @@ const state = {
     gameOver: false,
     won: false,
     allPokemon: [],
+    currentScore: 0, //score for this session
+    highScore: 0, //best single-game score
+    totalScore: 0, //cumulative all-time score
+    gamesPlayed: 0, //total games played
+    gamesWon: 0, //total wins
 };
 
 const pokemonImg     = document.getElementById('pokemon-img');
@@ -55,9 +60,6 @@ function showSuggestions(query){
     })
     autocompleteList.style.display = 'block'
 }
-
-
-
 
 
 const BADGE_NAMES = ['Boulder','Cascade','Thunder','Rainbow','Soul','Marsh','Volcano','Earth'];
@@ -162,6 +164,57 @@ function handleGuess() {
     render();
     guessInput.value = '';
 }
+
+//SCORING
+function saveScores(){
+    //localStorage ONLY stores STRINGS!! need to stringify!
+    localStorage.setItem('pokeguess_scores', JSON.stringify({
+        highScore:state.highScore,
+        totalScore: state.totalScore,
+        gamesPlayed: state.gamesPlayed,
+        gamesWon: state.gamesWon
+    }))
+}
+
+function loadScores() {
+    const saved = localStorage.getItem('pokeguess_scores')
+
+    //nothing saved means deafults stay at 0
+    if(!saved) return;
+
+    const data = JSON.parse(saved);
+
+    state.highScore = data.highScore || 0;
+    state.totalScore = data.totalScore || 0;
+    state.gamesPlayed = data.gamesPlayed || 0;
+    state.gamesWon = data.gamesWon
+}
+
+//score calcualtion
+function calculateScore(){
+    if(!state.won){
+        //loss - no score but game count increases
+        state.gamesPlayed ++;
+        saveScores();
+        return;
+    }
+
+    //points = badges * 100 - good for now? maybe change later to streak modifier?
+    state.currentScore = state.guessesLeft * 100;
+    state.totalScore += state.currentScore;
+    state.gamesPlayed++;
+    state.gamesWon++;
+
+    //highscore update if player beats it
+    if(state.currentScore > state.highScore){
+        state.highScore = state.currentScore
+    }
+
+    saveScores();
+}   
+
+
+
 
 guessBtn.addEventListener('click', handleGuess);
 guessInput.addEventListener('keydown', (e) => {
